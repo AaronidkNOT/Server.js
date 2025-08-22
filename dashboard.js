@@ -254,7 +254,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <div class="product-image-container">
                     ${producto.imagenes.map((img, index) => `
                         <img 
-                            ${index === 0 ? `src="http://localhost:3000/uploads/${img}"` : `data-src="http://localhost:3000/uploads/${img}"`}
+                            ${index === 0 ? `src="https://server-js-beta.vercel.app/uploads/${img}"` : `data-src="https://server-js-beta.vercel.app/uploads/${img}"`}
                             alt="${producto.nombre || producto.titulo}" 
                             class="${index === 0 ? 'active' : ''}" 
                             loading="lazy"
@@ -339,7 +339,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const productId = btn.getAttribute('data-id');
                 if (confirm('¿Estás seguro de que quieres eliminar este producto?')) {
                     try {
-                        const response = await fetch(`http://localhost:3000/api/productos/${productId}`, {
+                        const response = await fetch(`https://server-js-beta.vercel.app/api/productos/${productId}`, {
                             method: 'DELETE',
                             headers: {
                                 'Authorization': `Bearer ${token}`
@@ -393,7 +393,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     if (producto.imagenes && producto.imagenes.length > 0) {
                         producto.imagenes.forEach(imgName => {
                             const img = document.createElement('img');
-                            img.src = `http://localhost:3000/uploads/${imgName}`;
+                            img.src = `https://server-js-beta.vercel.app/uploads/${imgName}`;
                             currentImagesContainer.appendChild(img);
                         });
                     } else {
@@ -467,7 +467,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const fetchProducts = async () => {
         productsContainer.innerHTML = '<p id="loading-message">Cargando productos...</p>';
         try {
-            const response = await fetch('http://localhost:3000/api/productos', {
+            const response = await fetch('https://server-js-beta.vercel.app/api/productos', {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -602,7 +602,7 @@ const setupFormSubmission = (form) => {
         // --- FIN DE LA CORRECCIÓN ---
 
         try {
-            const response = await fetch('http://localhost:3000/api/productos', {
+            const response = await fetch('https://server-js-beta.vercel.app/api/productos', {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}` },
                 body: formData
@@ -759,7 +759,7 @@ const setupFormSubmission = (form) => {
         });
 
         try {
-            const response = await fetch(`http://localhost:3000/api/productos/${productId}`, {
+            const response = await fetch(`https://server-js-beta.vercel.app/api/productos/${productId}`, {
                 method: 'PUT',
                 headers: { 'Authorization': `Bearer ${token}` },
                 body: formData
