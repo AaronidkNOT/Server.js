@@ -14,7 +14,6 @@ const port = 3000;
 
 // Middleware
 app.use(express.json());
-app.use(cors());
 
 const corsOptions = {
     origin: '*',
@@ -405,6 +404,12 @@ app.delete('/api/productos/:id', verificarToken, (req, res) => {
     res.json({ mensaje: 'Producto eliminado exitosamente' });
 });
 
-app.listen(port, () => {
+if (process.env.NODE_ENV !== 'production') {
+    const port = 3000;
+    app.listen(port, () => {
     console.log(`Servidor escuchando en http://localhost:${port}`);
-});
+    });
+}
+
+// Exportar app para Vercel
+module.exports = app;
