@@ -404,12 +404,5 @@ app.delete('/api/productos/:id', verificarToken, (req, res) => {
     res.json({ mensaje: 'Producto eliminado exitosamente' });
 });
 
-if (process.env.NODE_ENV !== 'production') {
-    const port = 3000;
-    app.listen(port, () => {
-    console.log(`Servidor escuchando en http://localhost:${port}`);
-    });
-}
-
 // Exportar app para Vercel
 module.exports = app;
