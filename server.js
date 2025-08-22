@@ -10,7 +10,6 @@ const sharp = require('sharp');
 
 // Inicializamos la aplicación de Express
 const app = express();
-const port = 3000;
 
 // Middleware
 app.use(express.json());
@@ -403,6 +402,7 @@ app.delete('/api/productos/:id', verificarToken, (req, res) => {
     
     res.json({ mensaje: 'Producto eliminado exitosamente' });
 });
-
-// Exportar app para Vercel
-module.exports = app;
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+    console.log(`Servidor escuchando en el puerto ${port}`);
+});
