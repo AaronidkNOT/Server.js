@@ -545,10 +545,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         localStorage.removeItem('token');
         window.location.href = '/iniciar_sesion.html';
     });
-    
-    // La lógica del formSelector.addEventListener('change') y la configuración del formulario por defecto
-    // se movieron dentro del bloque try/catch de la verificación del token para aplicar la lógica
-    // específica del usuario 'cine'.
 
     const setupTallaStockInputs = (containerId, tallas, currentStock = {}) => {
         const container = document.getElementById(containerId);

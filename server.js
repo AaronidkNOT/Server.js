@@ -16,6 +16,13 @@ const port = 3000;
 app.use(express.json());
 app.use(cors());
 
+const corsOptions = {
+    origin: '*',
+    optionsSuccessStatus: 200 // Opcional, pero recomendado
+};
+
+app.use(cors(corsOptions));
+
 // Crear carpeta "uploads" si no existe
 const uploadDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadDir)) {
