@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         recuerdos: document.getElementById('form-recuerdos'),
         comision: document.getElementById('form-comision')
     };
-    
+
     const searchInput = document.getElementById('search-input');
     const filterTiendaSelect = document.getElementById('filter-tienda');
     const sortBySelect = document.getElementById('sort-by');
@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const editImagesInput = document.getElementById('edit-product-images');
     const editPreviewContainer = document.getElementById('edit-preview-images-container');
     const editFileNameDisplay = document.getElementById('edit-file-name-display');
-    
+
     let productosOriginales = [];
     let productosFiltrados = [];
     let productosPorPagina = 6;
@@ -146,7 +146,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const renderPreviews = () => {
             previewContainer.innerHTML = '';
             fileNameDisplay.textContent = fileStore.files.length > 0 ? `${fileStore.files.length} imagen(es) seleccionada(s)` : 'Seleccionar imágenes (múltiples)';
-            
+
             if (fileStore.files.length > 0) {
                 previewContainer.style.display = 'flex';
                 Array.from(fileStore.files).forEach((file, index) => {
@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                     const img = document.createElement('img');
                     img.src = URL.createObjectURL(file);
-                    
+
                     const removeBtn = document.createElement('button');
                     removeBtn.className = 'remove-image-btn';
                     removeBtn.textContent = '×';
@@ -186,7 +186,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             inputElement.files = fileStore.files;
             renderPreviews();
         });
-        
+
         inputElement.form.addEventListener('reset', () => {
             fileStore = new DataTransfer();
             inputElement.files = fileStore.files;
@@ -203,10 +203,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         const nextBtn = imageContainer.querySelector('.next');
         const dots = Array.from(imageContainer.querySelectorAll('.image-dot'));
         let currentImageIndex = 0;
-        
+
         const updateCarousel = () => {
             const imageToShow = images[currentImageIndex];
-            
+
             if (imageToShow.dataset.src) {
                 imageToShow.src = imageToShow.dataset.src;
                 delete imageToShow.dataset.src;
@@ -221,14 +221,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         };
 
         if (images.length > 0) updateCarousel();
-        
+
         if (prevBtn) {
             prevBtn.addEventListener('click', () => {
                 currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
                 updateCarousel();
             });
         }
-        
+
         if (nextBtn) {
             nextBtn.addEventListener('click', () => {
                 currentImageIndex = (currentImageIndex + 1) % images.length;
@@ -243,7 +243,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         });
     };
-    
+
     const renderProducts = (productos) => {
         productsContainer.innerHTML = '';
 
@@ -265,10 +265,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                 ? `
                 <div class="product-image-container">
                     ${producto.imagenes.map((img, index) => `
-                        <img 
-                            ${index === 0 ? `src="http://localhost:3000/uploads/${img}"` : `data-src="http://localhost:3000/uploads/${img}"`}
-                            alt="${producto.nombre || producto.titulo || producto.nombre}" 
-                            class="${index === 0 ? 'active' : ''}" 
+                        <img
+                            ${index === 0 ? `src="https://server-js-1-o703.onrender.com/uploads/${img}"` : `data-src="https://server-js-1-o703.onrender.com/uploads/${img}"`}
+                            alt="${producto.nombre || producto.titulo || producto.nombre}"
+                            class="${index === 0 ? 'active' : ''}"
                             loading="lazy"
                             data-index="${index}">
                     `).join('')}
@@ -345,7 +345,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 </div>
             `;
             productsContainer.appendChild(productItem);
-            
+
             setupImageCarousel(productItem);
         });
 
@@ -358,7 +358,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const productId = btn.getAttribute('data-id');
                 if (confirm('¿Estás seguro de que quieres eliminar este producto?')) {
                     try {
-                        const response = await fetch(`http://localhost:3000/api/productos/${productId}`, {
+                        const response = await fetch(`https://server-js-1-o703.onrender.com/api/productos/${productId}`, {
                             method: 'DELETE',
                             headers: {
                                 'Authorization': `Bearer ${token}`
@@ -389,7 +389,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (producto) {
                     document.getElementById('edit-product-id').value = producto._id;
                     document.getElementById('edit-product-type').value = productType;
-                    
+
                     const genericFields = document.getElementById('edit-generic-fields');
                     const priceField = document.getElementById('edit-price-field');
 
@@ -415,12 +415,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                         const priceInput = document.getElementById('edit-product-price');
                         priceInput.value = (producto.precio !== undefined && producto.precio !== null) ? producto.precio : '';
                     }
-                    
+
                     currentImagesContainer.innerHTML = '';
                     if (producto.imagenes && producto.imagenes.length > 0) {
                         producto.imagenes.forEach(imgName => {
                             const img = document.createElement('img');
-                            img.src = `http://localhost:3000/uploads/${imgName}`;
+                            img.src = `https://server-js-1-o703.onrender.com/uploads/${imgName}`;
                             currentImagesContainer.appendChild(img);
                         });
                     } else {
@@ -433,7 +433,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     editPreviewContainer.innerHTML = '';
                     editFileNameDisplay.textContent = 'Seleccionar imágenes (múltiples)';
                     Array.from(editSpecificFields.children).forEach(child => child.style.display = 'none');
-                    
+
                     const fieldsToShow = document.getElementById(`edit-fields-${productType}`);
                     if (fieldsToShow) {
                         fieldsToShow.style.display = 'block';
@@ -510,7 +510,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const fetchProducts = async () => {
         productsContainer.innerHTML = '<p id="loading-message">Cargando productos...</p>';
         try {
-            const response = await fetch('http://localhost:3000/api/productos', {
+            const response = await fetch('https://server-js-1-o703.onrender.com/api/productos', {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -529,7 +529,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             productsContainer.innerHTML = `<p style="color: var(--error);">No se pudieron cargar los productos.</p>`;
         }
     };
-    
+
     const filterAndSortProducts = () => {
     let tempProducts = [...productosOriginales];
     const searchTerm = searchInput.value.toLowerCase();
@@ -603,7 +603,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         localStorage.removeItem('token');
         window.location.href = '/iniciar_sesion.html';
     });
-    
+
     const setupTallaStockInputs = (containerId, tallas, currentStock = {}) => {
         const container = document.getElementById(containerId);
         container.innerHTML = '';
@@ -618,7 +618,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             container.appendChild(div);
         });
     };
-    
+
     const setupFormSubmission = (form) => {
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -642,7 +642,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
 
             try {
-                const response = await fetch('http://localhost:3000/api/productos', {
+                const response = await fetch('https://server-js-1-o703.onrender.com/api/productos', {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${token}` },
                     body: formData
@@ -704,7 +704,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupImagePreview(document.getElementById('recuerdos-images'), document.getElementById('recuerdos-preview-images-container'), document.getElementById('recuerdos-file-name-display'));
     setupImagePreview(document.getElementById('comision-images'), document.getElementById('comision-preview-images-container'), document.getElementById('comision-file-name-display'));
     setupImagePreview(editImagesInput, editPreviewContainer, editFileNameDisplay);
-    
+
     fetchProducts();
 
     searchInput.addEventListener('input', filterAndSortProducts);
@@ -750,7 +750,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 formData.append('precio', document.getElementById('edit-product-price').value);
                 formData.append('color', document.getElementById('edit-ropa-color').value);
                 formData.append('material', document.getElementById('edit-ropa-material').value);
-                
+
                 const stockPorTalla = {};
                 document.querySelectorAll('#edit-tallas-stock-container input').forEach(input => {
                     const talla = input.id.split('-').pop();
@@ -783,9 +783,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 formData.append('precio', document.getElementById('edit-product-price').value);
                 formData.append('duracion', document.getElementById('edit-cine-duration').value);
                 formData.append('genero', document.getElementById('edit-cine-genre').value);
-                formData.append('fechaFuncion', document.getElementById('edit-cine-fecha').value); 
-                formData.append('trailer', document.getElementById('edit-cine-trailer').value); 
-                formData.append('clasificacionEdad', document.getElementById('edit-cine-clasificacion').value); 
+                formData.append('fechaFuncion', document.getElementById('edit-cine-fecha').value);
+                formData.append('trailer', document.getElementById('edit-cine-trailer').value);
+                formData.append('clasificacionEdad', document.getElementById('edit-cine-clasificacion').value);
                 break;
             case 'recuerdos':
                 formData.append('titulo', document.getElementById('edit-recuerdos-title').value);
@@ -813,7 +813,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
 
         try {
-            const response = await fetch(`http://localhost:3000/api/productos/${productId}`, {
+            const response = await fetch(`https://server-js-1-o703.onrender.com/api/productos/${productId}`, {
                 method: 'PUT',
                 headers: { 'Authorization': `Bearer ${token}` },
                 body: formData

@@ -128,7 +128,7 @@ const eliminarImagenes = (imagenes) => {
 
 const procesarYGuardarImagenes = async (files) => {
     if (!files || files.length === 0) return [];
-    
+
     const nombresDeImagenes = [];
     for (const file of files) {
         const filename = `${Date.now()}-${Math.round(Math.random() * 1E9)}.webp`;
@@ -138,7 +138,7 @@ const procesarYGuardarImagenes = async (files) => {
             .resize(800, 800, { fit: 'inside', withoutEnlargement: true })
             .toFormat('webp', { quality: 80 })
             .toFile(outputPath);
-        
+
         nombresDeImagenes.push(filename);
     }
     return nombresDeImagenes;
@@ -182,11 +182,11 @@ app.get('/api/comision/:id', (req, res) => {
 // --- RUTA PÚBLICA PARA OBTENER LA PELÍCULA ACTUAL O EL PRÓXIMO ESTRENO ---
 app.get('/api/pelicula-actual', (req, res) => {
     const ahora = new Date();
-    
+
     // --- Paso 1: Buscar la película más reciente que ya esté en cartelera ---
-    let peliculasEnCartelera = productos.filter(p => 
-        p.tipo === 'cine' && 
-        p.fechaFuncion && 
+    let peliculasEnCartelera = productos.filter(p =>
+        p.tipo === 'cine' &&
+        p.fechaFuncion &&
         new Date(p.fechaFuncion) <= ahora
     );
 
@@ -198,9 +198,9 @@ app.get('/api/pelicula-actual', (req, res) => {
     }
 
     // --- Paso 2: Si no hay ninguna en cartelera, buscar el próximo estreno ---
-    let proximosEstrenos = productos.filter(p => 
-        p.tipo === 'cine' && 
-        p.fechaFuncion && 
+    let proximosEstrenos = productos.filter(p =>
+        p.tipo === 'cine' &&
+        p.fechaFuncion &&
         new Date(p.fechaFuncion) > ahora
     );
 
@@ -210,7 +210,7 @@ app.get('/api/pelicula-actual', (req, res) => {
         res.json(proximosEstrenos[0]);
         return; // Termina la ejecución aquí
     }
-    
+
     // --- Paso 3: Si no hay ni actuales ni próximos, devuelve un error ---
     res.status(404).json({ mensaje: 'No hay ninguna película disponible en cartelera o como próximo estreno.' });
 });
@@ -218,9 +218,9 @@ app.get('/api/pelicula-actual', (req, res) => {
 // --- RUTA PÚBLICA PARA OBTENER LOS PRÓXIMOS ESTRENOS ---
 app.get('/api/proximos-estrenos', (req, res) => {
     const ahora = new Date();
-    const proximosEstrenos = productos.filter(p => 
-        p.tipo === 'cine' && 
-        p.fechaFuncion && 
+    const proximosEstrenos = productos.filter(p =>
+        p.tipo === 'cine' &&
+        p.fechaFuncion &&
         new Date(p.fechaFuncion) > ahora
     );
 
@@ -321,15 +321,15 @@ app.post('/api/productos', verificarToken, upload, async (req, res) => {
                 });
                 break;
         case 'cine':
-            const { 
-                titulo: cineTitulo, 
-                descripcion: cineDescripcion, 
-                precio: cinePrecio, 
-                duracion, 
-                genero: cineGenero, 
-                fechaFuncion, 
-                trailer, 
-                clasificacionEdad 
+            const {
+                titulo: cineTitulo,
+                descripcion: cineDescripcion,
+                precio: cinePrecio,
+                duracion,
+                genero: cineGenero,
+                fechaFuncion,
+                trailer,
+                clasificacionEdad
             } = rest;
 
             if (!cineTitulo || !cineDescripcion || !cinePrecio || !fechaFuncion || !clasificacionEdad) {
@@ -431,8 +431,8 @@ app.put('/api/productos/:id', verificarToken, upload, async (req, res) => {
         }
 
         // Actualizar el producto manteniendo el tipo y el ID
-        productos[productIndex] = { 
-            ...productoExistente, 
+        productos[productIndex] = {
+            ...productoExistente,
             ...updatedData,
             tipo: productoExistente.tipo // Mantener el tipo original
         };
