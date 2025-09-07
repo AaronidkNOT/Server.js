@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const token = localStorage.getItem('token');
     if (!token) {
-        window.location.href = '/iniciar_sesion.html';
+        window.location.href = '/index.html';
         return;
     }
 
@@ -123,7 +123,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch (e) {
         console.error("Error al decodificar el token:", e);
         localStorage.removeItem('token');
-        window.location.href = '/iniciar_sesion.html';
+        window.location.href = '/index.html';
         return;
     }
 
@@ -601,7 +601,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     logoutBtn.addEventListener('click', () => {
         localStorage.removeItem('token');
-        window.location.href = '/iniciar_sesion.html';
+        window.location.href = '/index.html';
     });
 
     const setupTallaStockInputs = (containerId, tallas, currentStock = {}) => {
