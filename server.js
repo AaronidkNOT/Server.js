@@ -10,16 +10,14 @@ const sharp = require('sharp');
 
 // Inicializamos la aplicación de Express
 const app = express();
+const port = process.env.PORT || 3000;
+app.listen(port, "0.0.0.0", () => {
+    console.log(`Servidor corriendo en http://0.0.0.0:${port}`);
+});
 
 // Middleware
 app.use(express.json());
-
-const corsOptions = {
-    origin: '*',
-    optionsSuccessStatus: 200 // Opcional, pero recomendado
-};
-
-app.use(cors(corsOptions));
+app.use(cors());
 
 // Crear carpeta "uploads" si no existe
 const uploadDir = path.join(__dirname, 'uploads');
@@ -50,39 +48,39 @@ const usuarios = [
 ];
 
 let productos = [
-    { _id: 'prod1', userId: 'user1', tipo: 'cine', titulo: 'Como entrenar a tu dragon', descripcion: 'entrena a un dragon y se vuelve su amigo.', precio: 10500, stock: 100, imagenes: ['https://m.media-amazon.com/images/M/MV5BMzEzMTgwNzktYTk4ZC00ZTQ1LTllZGYtNzY4MTk2ZDM1MzA0XkEyXkFqcGc@._V1_.jpg'], duracion: '120 min', genero: 'Acción', fechaFuncion: "2025-08-14T11:00:00", trailer: 'https://www.youtube.com/embed/liGB1ssYn38?si=vDaH4btyekOwqQUx',
+    { _id: 'prod1', userId: 'user1', tipo: 'cine', titulo: 'Como entrenar a tu dragon', descripcion: 'entrena a un dragon y se vuelve su amigo.', precio: 10500, imagenes: ['https://m.media-amazon.com/images/M/MV5BMzEzMTgwNzktYTk4ZC00ZTQ1LTllZGYtNzY4MTk2ZDM1MzA0XkEyXkFqcGc@._V1_.jpg'], duracion: '120 min', genero: 'Acción', fechaFuncion: "2025-08-14T11:00:00", trailer: 'https://www.youtube.com/embed/liGB1ssYn38?si=vDaH4btyekOwqQUx', rating: { promedio: 0, votos: 0 },
         clasificacionEdad: 'ATP' },
     { _id: 'prod2', userId: 'user2', tipo: 'electronica', nombre: 'Videojuego nuevo', descripcion: 'Último lanzamiento para PS5.', precio: 69.99, stock: 50, imagenes: ['videojuego.jpg'], marca: 'Sony', modelo: 'PS5' },
-    { 
-        _id: 'prod3', 
-        userId: 'user1', 
-        tipo: 'cine', 
-        titulo: 'El Origen del Tiempo', 
-        descripcion: 'Un científico viaja a través de diferentes épocas para salvar a la humanidad.', 
-        precio: 1200, 
-        stock: 150, 
-        imagenes: ['https://m.media-amazon.com/images/M/MV5BZDYwMDU0NTktMjg1MC00ZWNiLWE2ZTQtYzczZWMxZGM3OTJmXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg'], 
-        duracion: '135 min', 
-        genero: 'Ciencia Ficción', 
+    {
+        _id: 'prod3',
+        userId: 'user1',
+        tipo: 'cine',
+        titulo: 'El Origen del Tiempo',
+        descripcion: 'Un científico viaja a través de diferentes épocas para salvar a la humanidad.',
+        precio: 1200,
+        imagenes: ['https://m.media-amazon.com/images/M/MV5BZDYwMDU0NTktMjg1MC00ZWNiLWE2ZTQtYzczZWMxZGM3OTJmXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg'],
+        duracion: '135 min',
+        genero: 'Ciencia Ficción',
         fechaFuncion: "2025-12-01T20:00:00",
         trailer: 'https://www.youtube.com/embed/RV9L7ui9Cn8?si=Yk79TUEAWtYqhjKv',
         clasificacionEdad: 'ATP'
     },
-    { 
-        _id: 'prod4', 
-        userId: 'user1', 
-        tipo: 'cine', 
-        titulo: 'Dracula 4', 
-        descripcion: 'Una aventura épica en un mundo de fantasía y magia.', 
-        precio: 1150, 
-        stock: 120, 
-        imagenes: ['https://pics.filmaffinity.com/Draacula_4_La_sombra_del_dragaon-113373549-large.jpg'], 
-        duracion: '140 min', 
-        genero: 'Fantasía', 
+    {
+        _id: 'prod4',
+        userId: 'user1',
+        tipo: 'cine',
+        titulo: 'Dracula 4',
+        descripcion: 'Una aventura épica en un mundo de fantasía y magia.',
+        precio: 1150,
+        imagenes: ['https://pics.filmaffinity.com/Draacula_4_La_sombra_del_dragaon-113373549-large.jpg'],
+        duracion: '140 min',
+        genero: 'Fantasía',
         fechaFuncion: "2025-10-15T19:30:00",
         trailer: 'https://www.youtube.com/embed/mDfdNTf4FA0?si=0421HALUiy7KBIwT',
         clasificacionEdad: '+13'
-    }
+    },
+    { _id: 'prod5', userId: 'user1', tipo: 'recuerdos', titulo: 'Día del Cine Nacional', descripcion: 'Fotos de la celebración anual del Día del Cine Nacional con la comunidad.', imagenes: ['recuerdos1.jpg', 'recuerdos2.jpg'] },
+    { _id: 'prod6', userId: 'user1', tipo: 'comision', nombre: 'Ana Gómez', cargo: 'Presidenta', biografia: 'Ana tiene más de 20 años de experiencia en la industria cinematográfica.' }
 ];
 
 
@@ -146,29 +144,80 @@ const procesarYGuardarImagenes = async (files) => {
     return nombresDeImagenes;
 };
 
+// --- RUTAS PÚBLICAS ---
+
+// Obtener todos los recuerdos
+app.get('/api/recuerdos', (req, res) => {
+    const recuerdos = productos.filter(p => p.tipo === 'recuerdos');
+    res.json(recuerdos);
+});
+
+// Obtener todos los miembros de la comisión directiva
+app.get('/api/comision', (req, res) => {
+    const comision = productos.filter(p => p.tipo === 'comision');
+    res.json(comision);
+});
+
+// Obtener un recuerdo específico por ID
+app.get('/api/recuerdos/:id', (req, res) => {
+    const recuerdo = productos.find(p => p._id === req.params.id && p.tipo === 'recuerdos');
+    if (recuerdo) {
+        res.json(recuerdo);
+    } else {
+        res.status(404).json({ mensaje: 'Recuerdo no encontrado' });
+    }
+});
+
+// Obtener un miembro específico de la comisión por ID
+app.get('/api/comision/:id', (req, res) => {
+    const miembro = productos.find(p => p._id === req.params.id && p.tipo === 'comision');
+    if (miembro) {
+        res.json(miembro);
+    } else {
+        res.status(404).json({ mensaje: 'Miembro no encontrado' });
+    }
+});
+
 // --- RUTA PÚBLICA PARA OBTENER LA PELÍCULA ACTUAL ---
+// --- RUTA PÚBLICA PARA OBTENER LA PELÍCULA ACTUAL O EL PRÓXIMO ESTRENO ---
 app.get('/api/pelicula-actual', (req, res) => {
     const ahora = new Date();
-    // Filtramos las películas de cine que ya tienen una fecha de función pasada
-    const peliculasEnCartelera = productos.filter(p => 
+    
+    // --- Paso 1: Buscar la película más reciente que ya esté en cartelera ---
+    let peliculasEnCartelera = productos.filter(p => 
         p.tipo === 'cine' && 
         p.fechaFuncion && 
         new Date(p.fechaFuncion) <= ahora
     );
 
     if (peliculasEnCartelera.length > 0) {
-        // Encontramos la película más reciente
+        // Si hay películas que ya pasaron, ordena para encontrar la más reciente y la devuelve
         peliculasEnCartelera.sort((a, b) => new Date(b.fechaFuncion) - new Date(a.fechaFuncion));
         res.json(peliculasEnCartelera[0]);
-    } else {
-        res.status(404).json({ mensaje: 'No hay ninguna película en cartelera.' });
+        return; // Termina la ejecución aquí
     }
+
+    // --- Paso 2: Si no hay ninguna en cartelera, buscar el próximo estreno ---
+    let proximosEstrenos = productos.filter(p => 
+        p.tipo === 'cine' && 
+        p.fechaFuncion && 
+        new Date(p.fechaFuncion) > ahora
+    );
+
+    if (proximosEstrenos.length > 0) {
+        // Si hay próximos estrenos, ordena para encontrar el más cercano y lo devuelve
+        proximosEstrenos.sort((a, b) => new Date(a.fechaFuncion) - new Date(b.fechaFuncion));
+        res.json(proximosEstrenos[0]);
+        return; // Termina la ejecución aquí
+    }
+    
+    // --- Paso 3: Si no hay ni actuales ni próximos, devuelve un error ---
+    res.status(404).json({ mensaje: 'No hay ninguna película disponible en cartelera o como próximo estreno.' });
 });
 
 // --- RUTA PÚBLICA PARA OBTENER LOS PRÓXIMOS ESTRENOS ---
 app.get('/api/proximos-estrenos', (req, res) => {
     const ahora = new Date();
-    // Filtramos las películas de cine que tienen una fecha de función futura
     const proximosEstrenos = productos.filter(p => 
         p.tipo === 'cine' && 
         p.fechaFuncion && 
@@ -200,7 +249,7 @@ app.get('/api/productos', verificarToken, (req, res) => {
     const userProducts = productos.filter(p => p.userId === req.user.userId);
     res.json(userProducts);
 });
-// >>>>> NUEVA RUTA PÚBLICA PARA OBTENER PELÍCULA POR ID <<<<<
+
 app.get('/api/pelicula/:id', (req, res) => {
     const pelicula = productos.find(p => p._id === req.params.id && p.tipo === 'cine');
     if (pelicula) {
@@ -209,8 +258,6 @@ app.get('/api/pelicula/:id', (req, res) => {
         res.status(404).json({ mensaje: 'Película no encontrada' });
     }
 });
-// >>>>> FIN NUEVA RUTA <<<<<
-
 
 app.post('/api/productos', verificarToken, upload, async (req, res) => {
     try {
@@ -273,24 +320,56 @@ app.post('/api/productos', verificarToken, upload, async (req, res) => {
                     genero
                 });
                 break;
-            // ... dentro de app.post('/api/productos')
-            case 'cine':
-    const { titulo: tituloC, descripcion: descripcionC, precio: precioC, stock: stockC, duracion, genero: generoC, fechaFuncion, trailer, clasificacionEdad } = rest;
-    if (!tituloC || !descripcionC || !precioC || !stockC || !duracion || !fechaFuncion || !trailer || !clasificacionEdad) {
-        return res.status(400).json({ mensaje: 'Faltan campos obligatorios para el producto de cine' });
-    }
-    Object.assign(nuevoProducto, {
-        titulo: tituloC,
-        descripcion: descripcionC,
-        precio: parseFloat(precioC),
-        stock: parseInt(stockC),
-        duracion,
-        genero: generoC,
-        fechaFuncion,
-        trailer,
-        clasificacionEdad
-    });
-    break;
+        case 'cine':
+            const { 
+                titulo: cineTitulo, 
+                descripcion: cineDescripcion, 
+                precio: cinePrecio, 
+                duracion, 
+                genero: cineGenero, 
+                fechaFuncion, 
+                trailer, 
+                clasificacionEdad 
+            } = rest;
+
+            if (!cineTitulo || !cineDescripcion || !cinePrecio || !fechaFuncion || !clasificacionEdad) {
+                return res.status(400).json({ mensaje: 'Faltan campos obligatorios para el producto de cine' });
+            }
+
+            Object.assign(nuevoProducto, {
+                titulo: cineTitulo,
+                descripcion: cineDescripcion,
+                precio: parseFloat(cinePrecio),
+                duracion,
+                genero: cineGenero,
+                fechaFuncion,
+                trailer,
+                clasificacionEdad
+            });
+            break;
+
+
+            case 'recuerdos':
+                const { titulo: tituloR, descripcion: descripcionR } = rest;
+                if (!tituloR || !descripcionR) {
+                    return res.status(400).json({ mensaje: 'Faltan campos obligatorios para la Galería de Recuerdos' });
+                }
+                Object.assign(nuevoProducto, {
+                    titulo: tituloR,
+                    descripcion: descripcionR
+                });
+                break;
+            case 'comision':
+                const { nombre: nombreCo, cargo, biografia } = rest;
+                if (!nombreCo || !cargo || !biografia) {
+                    return res.status(400).json({ mensaje: 'Faltan campos obligatorios para la Comisión Directiva' });
+                }
+                Object.assign(nuevoProducto, {
+                    nombre: nombreCo,
+                    cargo,
+                    biografia
+                });
+                break;
             default:
                 const { nombre: nombreG, descripcion: descripcionG, precio: precioG, stock: stockG, categoria, sku, peso, estado } = rest;
                 if (!nombreG || !descripcionG || !precioG || !stockG) {
@@ -316,41 +395,48 @@ app.post('/api/productos', verificarToken, upload, async (req, res) => {
         res.status(500).json({ mensaje: 'Error interno del servidor al crear el producto.' });
     }
 });
-// Agrega esta nueva ruta en server.js
-app.get('/api/pelicula/:id', (req, res) => {
-    const pelicula = productos.find(p => p._id === req.params.id && p.tipo === 'cine');
-    if (pelicula) {
-        res.json(pelicula);
-    } else {
-        res.status(404).json({ mensaje: 'Película no encontrada' });
-    }
-});
+
 app.put('/api/productos/:id', verificarToken, upload, async (req, res) => {
     try {
         const productId = req.params.id;
-        const { tipo, stock_por_talla, ...updatedData } = req.body;
-        
+        const { tipo, ...updatedData } = req.body;
+
         const productIndex = productos.findIndex(p => p._id === productId && p.userId === req.user.userId);
-        
+
         if (productIndex === -1) {
             return res.status(404).json({ mensaje: 'Producto no encontrado o no autorizado' });
         }
-        
+
         const productoExistente = productos[productIndex];
-        
-        if (tipo === 'ropa' && stock_por_talla) {
-            updatedData.stockPorTalla = JSON.parse(stock_por_talla);
+
+        // Para productos de tipo ropa
+        if (tipo === 'ropa' && updatedData.stock_por_talla) {
+            updatedData.stockPorTalla = JSON.parse(updatedData.stock_por_talla);
             updatedData.tallas = Object.keys(updatedData.stockPorTalla);
             updatedData.stock = Object.values(updatedData.stockPorTalla).reduce((sum, val) => sum + parseInt(val), 0);
+            delete updatedData.stock_por_talla;
         }
-        
+
+        // Para productos de tipo cine
+        if (tipo === 'cine') {
+            // Asegurarnos de que los campos específicos de cine se mantengan
+            if (updatedData.fechaFuncion) {
+                updatedData.fechaFuncion = new Date(updatedData.fechaFuncion).toISOString();
+            }
+        }
+
         if (req.files && req.files.length > 0) {
             eliminarImagenes(productoExistente.imagenes);
             updatedData.imagenes = await procesarYGuardarImagenes(req.files);
         }
-        
-        productos[productIndex] = { ...productoExistente, ...updatedData };
-        
+
+        // Actualizar el producto manteniendo el tipo y el ID
+        productos[productIndex] = { 
+            ...productoExistente, 
+            ...updatedData,
+            tipo: productoExistente.tipo // Mantener el tipo original
+        };
+
         res.json({ mensaje: 'Producto actualizado exitosamente', producto: productos[productIndex] });
     } catch (error) {
         console.error('Error al actualizar el producto:', error);
@@ -358,51 +444,59 @@ app.put('/api/productos/:id', verificarToken, upload, async (req, res) => {
     }
 });
 
+// --- RUTA PARA CALIFICAR UNA PELÍCULA ---
+app.post('/api/peliculas/:id/calificar', (req, res) => {
+    const peliculaId = req.params.id; // 1. Obtiene el ID de la película de la URL
+    const { calificacion } = req.body; // 2. Obtiene la calificación (ej: 4) que envió el script
 
-// >>>>> NUEVA RUTA PARA PROCESAR COMPRA Y DESCONTAR STOCK <<<<<
-app.post('/api/comprar-entradas', (req, res) => {
-    const { peliculaId, cantidad } = req.body;
-
-    if (!peliculaId || !cantidad) {
-        return res.status(400).json({ mensaje: 'Faltan datos para la compra.' });
+    // 3. Valida que la calificación sea un número válido
+    if (!calificacion || calificacion < 1 || calificacion > 5) {
+        return res.status(400).json({ mensaje: 'La calificación debe ser un número entre 1 y 5.' });
     }
 
-    const productIndex = productos.findIndex(p => p._id === peliculaId && p.tipo === 'cine');
+    const peliculaIndex = productos.findIndex(p => p._id === peliculaId); // 4. Busca la película en el arreglo
 
-    if (productIndex === -1) {
+    // 5. Si no la encuentra, devuelve un error
+    if (peliculaIndex === -1) {
         return res.status(404).json({ mensaje: 'Película no encontrada.' });
     }
 
-    if (productos[productIndex].stock >= cantidad) {
-        productos[productIndex].stock -= cantidad;
-        res.json({ 
-            mensaje: 'Compra exitosa', 
-            stockRestante: productos[productIndex].stock 
-        });
-    } else {
-        res.status(400).json({ 
-            mensaje: 'No hay suficientes entradas disponibles.',
-            stockRestante: productos[productIndex].stock
-        });
+    const pelicula = productos[peliculaIndex];
+
+    // 6. Si es el primer voto, crea el objeto 'rating'
+    if (!pelicula.rating) {
+        pelicula.rating = { promedio: 0, votos: 0 };
     }
+
+    // 7. El cálculo matemático para el nuevo promedio
+    const totalPuntosActuales = pelicula.rating.promedio * pelicula.rating.votos;
+    const nuevosVotos = pelicula.rating.votos + 1;
+    const nuevoPromedio = (totalPuntosActuales + calificacion) / nuevosVotos;
+
+    // 8. Actualiza los datos de la película con los nuevos valores
+    pelicula.rating.promedio = nuevoPromedio;
+    pelicula.rating.votos = nuevosVotos;
+
+    // 9. Devuelve el nuevo rating al script.js para que actualice la vista
+    res.json(pelicula.rating);
 });
-// >>>>> FIN NUEVA RUTA <<<<<
+
 app.delete('/api/productos/:id', verificarToken, (req, res) => {
     const productId = req.params.id;
     const productIndex = productos.findIndex(p => p._id === productId && p.userId === req.user.userId);
-    
+
     if (productIndex === -1) {
         return res.status(404).json({ mensaje: 'Producto no encontrado o no autorizado' });
     }
-    
+
     const productoAEliminar = productos[productIndex];
     eliminarImagenes(productoAEliminar.imagenes);
 
     productos.splice(productIndex, 1);
-    
+
     res.json({ mensaje: 'Producto eliminado exitosamente' });
 });
-const port = process.env.PORT || 3000;
+
 app.listen(port, () => {
-    console.log(`Servidor escuchando en el puerto ${port}`);
+    console.log(`Servidor escuchando en http://localhost:${port}`);
 });

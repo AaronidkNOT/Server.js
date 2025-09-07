@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded', async () => {
     const logoutBtn = document.getElementById('logout-btn');
     const productsContainer = document.getElementById('products-container');
@@ -10,7 +9,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         ropa: document.getElementById('form-ropa'),
         electronica: document.getElementById('form-electronica'),
         libros: document.getElementById('form-libros'),
-        cine: document.getElementById('form-cine')
+        cine: document.getElementById('form-cine'),
+        recuerdos: document.getElementById('form-recuerdos'),
+        comision: document.getElementById('form-comision')
     };
     
     const searchInput = document.getElementById('search-input');
@@ -46,29 +47,37 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Lógica específica para el usuario 'cine'
         if (payload.username === 'cine') {
-            const storeSelector = document.querySelector('.store-selector');
-            if (storeSelector) {
-                storeSelector.style.display = 'none';
-            }
+    const unwantedOptions = ['general', 'ropa', 'electronica', 'libros', 'juegos'];
+    Array.from(formSelector.options).forEach(option => {
+        if (unwantedOptions.includes(option.value)) {
+            option.remove();
+        }
+    });
 
-            Object.values(forms).forEach(form => {
-                form.style.display = 'none';
-                form.classList.remove('active', 'show');
+    formSelector.addEventListener('change', (e) => {
+        const selectedForm = e.target.value;
+        Object.values(forms).forEach(form => {
+            if (form.classList.contains('show')) {
+                form.classList.remove('show');
+                setTimeout(() => form.style.display = 'none', 250);
+            }
+        });
+        const formToShow = forms[selectedForm];
+        formToShow.style.display = 'flex';
+        setTimeout(() => formToShow.classList.add('show'), 20);
+                });
+
+                // Formulario por defecto: cine
+                const defaultForm = document.querySelector('#form-cine');
+                defaultForm.style.display = 'flex';
+                defaultForm.classList.add('show');
+            } else if (payload.username === 'juegos') {
+                Array.from(formSelector.options).forEach(option => {
+                    if (unwantedOptions.includes(option.value)) {
+            option.remove();
+                    }
             });
 
-            const cineForm = forms['cine'];
-            if (cineForm) {
-                cineForm.style.display = 'flex';
-                cineForm.classList.add('active');
-                setTimeout(() => cineForm.classList.add('show'), 20);
-            }
-        } else if (payload.username === 'juegos') {
-            const unwantedOptions = ['ropa', 'libros', 'cine'];
-            Array.from(formSelector.options).forEach(option => {
-                if (unwantedOptions.includes(option.value)) {
-                    option.remove();
-                }
-            });
 
             formSelector.addEventListener('change', (e) => {
                 const selectedForm = e.target.value;
@@ -221,8 +230,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         
         if (nextBtn) {
-            nextImageIndex = (currentImageIndex + 1) % images.length;
-            updateCarousel();
+            nextBtn.addEventListener('click', () => {
+                currentImageIndex = (currentImageIndex + 1) % images.length;
+                updateCarousel();
+            });
         }
 
         dots.forEach(dot => {
@@ -255,8 +266,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <div class="product-image-container">
                     ${producto.imagenes.map((img, index) => `
                         <img 
-                            ${index === 0 ? `src="https://server-js-ipff.onrender.com/uploads/${img}"` : `data-src="https://server-js-ipff.onrender.com/uploads/${img}"`}
-                            alt="${producto.nombre || producto.titulo}" 
+                            ${index === 0 ? `src="http://localhost:3000/uploads/${img}"` : `data-src="http://localhost:3000/uploads/${img}"`}
+                            alt="${producto.nombre || producto.titulo || producto.nombre}" 
                             class="${index === 0 ? 'active' : ''}" 
                             loading="lazy"
                             data-index="${index}">
@@ -295,10 +306,16 @@ document.addEventListener('DOMContentLoaded', async () => {
                         details += p.genero ? `<p><strong>Género:</strong> ${p.genero}</p>` : '';
                         break;
                     case 'cine':
-                        details += `<p><strong>Stock:</strong> ${p.stock}</p>`;
                         details += p.duracion ? `<p><strong>Duración:</strong> ${p.duracion}</p>` : '';
                         details += p.genero ? `<p><strong>Género:</strong> ${p.genero}</p>` : '';
                         details += p.clasificacionEdad ? `<p><strong>Clasificación:</strong> ${p.clasificacionEdad}</p>` : '';
+                        break;
+                    case 'recuerdos':
+                        details += p.descripcion ? `<p><strong>Descripción:</strong> ${p.descripcion}</p>` : '';
+                        break;
+                    case 'comision':
+                        details += p.cargo ? `<p><strong>Cargo:</strong> ${p.cargo}</p>` : '';
+                        details += p.biografia ? `<p><strong>Biografía:</strong> ${p.biografia}</p>` : '';
                         break;
                     default: // general
                         details += `<p><strong>Stock:</strong> ${p.stock}</p>`;
@@ -312,16 +329,17 @@ document.addEventListener('DOMContentLoaded', async () => {
             };
 
             const title = producto.nombre || producto.titulo;
+            const price = producto.precio !== undefined ? `<p><strong>Precio:</strong> ${new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(producto.precio)}</p>` : '';
 
             productItem.innerHTML = `
-                ${imageCarouselHTML}
-                <div class="product-info">
-                    <h3>${title}</h3>
-                    <p>${producto.descripcion}</p>
-                    <p><strong>Precio:</strong> ${new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(producto.precio)}</p>
-                    ${getProductDetails(producto)}
-                </div>
-                <div class="product-actions">
+    ${imageCarouselHTML}
+    <div class="product-info">
+        <h3>${title}</h3>
+        ${ (producto.tipo !== 'comision' && producto.tipo !== 'recuerdos') ? `<p>${producto.descripcion || ''}</p>` : '' }
+        ${price}
+        ${getProductDetails(producto)}
+    </div>
+    <div class="product-actions">
                     <button class="edit-btn" data-id="${producto._id}" data-type="${producto.tipo}">Editar</button>
                     <button class="delete-btn" data-id="${producto._id}">Eliminar</button>
                 </div>
@@ -340,7 +358,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const productId = btn.getAttribute('data-id');
                 if (confirm('¿Estás seguro de que quieres eliminar este producto?')) {
                     try {
-                        const response = await fetch(`https://server-js-ipff.onrender.com/api/productos/${productId}`, {
+                        const response = await fetch(`http://localhost:3000/api/productos/${productId}`, {
                             method: 'DELETE',
                             headers: {
                                 'Authorization': `Bearer ${token}`
@@ -368,40 +386,50 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const productType = btn.getAttribute('data-type') || 'general';
                 const producto = productosOriginales.find(p => p._id === productId);
 
-                console.log("Producto a editar:", producto); // DEBUG
                 if (producto) {
                     document.getElementById('edit-product-id').value = producto._id;
                     document.getElementById('edit-product-type').value = productType;
                     
-                    // Nombre o Título
-                if (productType === 'libros' || productType === 'cine') {
-                    document.getElementById('edit-product-name').value = producto.titulo ?? '';
-                } else {
-                    document.getElementById('edit-product-name').value = producto.nombre ?? '';
-                }
+                    const genericFields = document.getElementById('edit-generic-fields');
+                    const priceField = document.getElementById('edit-price-field');
 
-                // Descripción
-                const descTextarea = document.getElementById('edit-product-description');
-                descTextarea.value = producto.descripcion ?? '';
-                updateCharCounter(descTextarea, document.getElementById('edit-product-description-counter'));
+                    if (['recuerdos', 'comision'].includes(productType)) {
+                        genericFields.style.display = 'none';
+                    } else {
+                        genericFields.style.display = 'block';
+                        priceField.style.display = 'block';
+                    }
 
-                // Precio
-                document.getElementById('edit-product-price').value = 
-                (producto.precio !== undefined && producto.precio !== null) ? producto.precio : '';
+                    if (!['recuerdos', 'comision'].includes(productType)) {
+                        if (['libros', 'cine'].includes(productType)) {
+                            document.getElementById('edit-product-name').value = producto.titulo ?? '';
+                            document.getElementById('edit-product-name').previousElementSibling.textContent = 'Título:';
+                        } else {
+                            document.getElementById('edit-product-name').value = producto.nombre ?? '';
+                            document.getElementById('edit-product-name').previousElementSibling.textContent = 'Nombre:';
+                        }
+                        const descTextarea = document.getElementById('edit-product-description');
+                        descTextarea.value = producto.descripcion ?? '';
+                        updateCharCounter(descTextarea, document.getElementById('edit-product-description-counter'));
 
+                        const priceInput = document.getElementById('edit-product-price');
+                        priceInput.value = (producto.precio !== undefined && producto.precio !== null) ? producto.precio : '';
+                    }
                     
                     currentImagesContainer.innerHTML = '';
                     if (producto.imagenes && producto.imagenes.length > 0) {
                         producto.imagenes.forEach(imgName => {
                             const img = document.createElement('img');
-                            img.src = `https://server-js-ipff.onrender.com/uploads/${imgName}`;
+                            img.src = `http://localhost:3000/uploads/${imgName}`;
                             currentImagesContainer.appendChild(img);
                         });
                     } else {
                         currentImagesContainer.innerHTML = '<p>No hay imágenes subidas.</p>';
                     }
-                    // Solo limpiar las imágenes, no resetear todo el formulario
+
                     editImagesInput.value = '';
+                    editImagesInput.multiple = true;
+                    editImagesInput.accept = 'image/*';
                     editPreviewContainer.innerHTML = '';
                     editFileNameDisplay.textContent = 'Seleccionar imágenes (múltiples)';
                     Array.from(editSpecificFields.children).forEach(child => child.style.display = 'none');
@@ -441,7 +469,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                             document.getElementById('edit-libro-genre').value = producto.genero || '';
                             break;
                         case 'cine':
-                            document.getElementById('edit-cine-stock').value = producto.stock;
                             document.getElementById('edit-cine-duration').value = producto.duracion || '';
                             document.getElementById('edit-cine-genre').value = producto.genero || '';
                             document.getElementById('edit-cine-trailer').value = producto.trailer || '';
@@ -449,6 +476,21 @@ document.addEventListener('DOMContentLoaded', async () => {
                         if (producto.fechaFuncion) {
                             document.getElementById('edit-cine-fecha').value = producto.fechaFuncion.slice(0, 16);
                             }
+                            break;
+                        case 'recuerdos':
+                            document.getElementById('edit-recuerdos-title').value = producto.titulo || '';
+                            const recDescTextarea = document.getElementById('edit-recuerdos-description');
+                            recDescTextarea.value = producto.descripcion || '';
+                            updateCharCounter(recDescTextarea, document.getElementById('edit-recuerdos-description-counter'));
+                            break;
+                        case 'comision':
+                            document.getElementById('edit-comision-name').value = producto.nombre || '';
+                            document.getElementById('edit-comision-cargo').value = producto.cargo || '';
+                            const comBioTextarea = document.getElementById('edit-comision-biografia');
+                            comBioTextarea.value = producto.biografia || '';
+                            updateCharCounter(comBioTextarea, document.getElementById('edit-comision-biografia-counter'));
+                            editImagesInput.multiple = false;
+                            editFileNameDisplay.textContent = 'Seleccionar foto de perfil';
                             break;
                         case 'general':
                             document.getElementById('edit-product-stock').value = producto.stock;
@@ -468,7 +510,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const fetchProducts = async () => {
         productsContainer.innerHTML = '<p id="loading-message">Cargando productos...</p>';
         try {
-            const response = await fetch('https://server-js-ipff.onrender.com/api/productos', {
+            const response = await fetch('http://localhost:3000/api/productos', {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -478,7 +520,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (response.ok) {
                 const productos = await response.json();
                 productosOriginales = productos;
-                updateFiltersAndRender();
+                filterAndSortProducts();
             } else {
                 throw new Error('Error al obtener productos');
             }
@@ -488,65 +530,80 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
     
-    const updateFiltersAndRender = () => {
-        const tiendasUnicas = [...new Set(productosOriginales.map(p => p.tipo))];
-        filterTiendaSelect.innerHTML = '<option value="todos">Todos</option>';
-        tiendasUnicas.forEach(tienda => {
-            const option = document.createElement('option');
-            option.value = tienda;
-            option.textContent = tienda.charAt(0).toUpperCase() + tienda.slice(1);
-            filterTiendaSelect.appendChild(option);
-        });
-
-        filterAndSortProducts();
-    };
-
     const filterAndSortProducts = () => {
-        let tempProducts = [...productosOriginales];
-        const searchTerm = searchInput.value.toLowerCase();
-        const selectedTienda = filterTiendaSelect.value;
-        const sortBy = sortBySelect.value;
+    let tempProducts = [...productosOriginales];
+    const searchTerm = searchInput.value.toLowerCase();
+    const selectedTienda = filterTiendaSelect.value;
+    const sortBy = sortBySelect.value;
 
-        tempProducts = tempProducts.filter(p => {
-            const matchesSearch = (p.nombre && p.nombre.toLowerCase().includes(searchTerm)) ||
-                                    (p.titulo && p.titulo.toLowerCase().includes(searchTerm)) ||
-                                    (p.descripcion && p.descripcion.toLowerCase().includes(searchTerm)) ||
-                                    (p.categoria && p.categoria.toLowerCase().includes(searchTerm)) ||
-                                    (p.sku && p.sku.toLowerCase().includes(searchTerm)) ||
-                                    (p.autor && p.autor.toLowerCase().includes(searchTerm)) ||
-                                    (p.genero && p.genero.toLowerCase().includes(searchTerm)) ||
-                                    (p.marca && p.marca.toLowerCase().includes(searchTerm)) ||
-                                    (p.modelo && p.modelo.toLowerCase().includes(searchTerm)) ||
-                                    (p.tallas && p.tallas.some(t => t.toLowerCase().includes(searchTerm)));
-            const matchesTienda = selectedTienda === 'todos' || p.tipo === selectedTienda;
-            return matchesSearch && matchesTienda;
-        });
-
-        switch (sortBy) {
-            case 'name-asc':
-                tempProducts.sort((a, b) => (a.nombre || a.titulo).localeCompare(b.nombre || b.titulo));
-                break;
-            case 'name-desc':
-                tempProducts.sort((a, b) => (b.nombre || b.titulo).localeCompare(a.nombre || b.titulo));
-                break;
-            case 'price-asc':
-                tempProducts.sort((a, b) => a.precio - b.precio);
-                break;
-            case 'price-desc':
-                tempProducts.sort((a, b) => b.precio - a.precio);
-                break;
+    tempProducts = tempProducts.filter(p => {
+        let textToSearch = '';
+        if (p.nombre) {
+            textToSearch += p.nombre;
+        }
+        if (p.titulo) {
+            textToSearch += p.titulo;
+        }
+        if (p.descripcion) {
+            textToSearch += p.descripcion;
+        }
+        if (p.categoria) {
+            textToSearch += p.categoria;
+        }
+        if (p.sku) {
+            textToSearch += p.sku;
+        }
+        if (p.autor) {
+            textToSearch += p.autor;
+        }
+        if (p.genero) {
+            textToSearch += p.genero;
+        }
+        if (p.marca) {
+            textToSearch += p.marca;
+        }
+        if (p.modelo) {
+            textToSearch += p.modelo;
+        }
+        if (p.biografia) {
+            textToSearch += p.biografia;
+        }
+        if (p.cargo) {
+            textToSearch += p.cargo;
         }
 
-        productosFiltrados = tempProducts;
-        paginaActual = 1;
-        renderProducts(productosFiltrados);
-    };
+        const matchesSearch = textToSearch.toLowerCase().includes(searchTerm) ||
+                            (p.tallas && p.tallas.some(t => t.toLowerCase().includes(searchTerm)));
+
+        const matchesTienda = selectedTienda === 'todos' || p.tipo === selectedTienda;
+        return matchesSearch && matchesTienda;
+    });
+
+    switch (sortBy) {
+        case 'name-asc':
+            tempProducts.sort((a, b) => (a.nombre || a.titulo || '').localeCompare(b.nombre || b.titulo || ''));
+            break;
+        case 'name-desc':
+            tempProducts.sort((a, b) => (b.nombre || b.titulo || '').localeCompare(a.nombre || a.titulo || ''));
+            break;
+        case 'price-asc':
+            tempProducts.sort((a, b) => (a.precio || 0) - (b.precio || 0));
+            break;
+        case 'price-desc':
+            tempProducts.sort((a, b) => (b.precio || 0) - (a.precio || 0));
+            break;
+    }
+
+    productosFiltrados = tempProducts;
+    paginaActual = 1;
+    renderProducts(productosFiltrados);
+};
 
     logoutBtn.addEventListener('click', () => {
         localStorage.removeItem('token');
         window.location.href = '/iniciar_sesion.html';
     });
-
+    
     const setupTallaStockInputs = (containerId, tallas, currentStock = {}) => {
         const container = document.getElementById(containerId);
         container.innerHTML = '';
@@ -562,65 +619,50 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     };
     
-    // dashboard.js
+    const setupFormSubmission = (form) => {
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
 
-// ... (código existente hasta la función setupFormSubmission)
+            const formData = new FormData(form);
+            const formType = form.querySelector('input[name="tipo"]').value;
 
-const setupFormSubmission = (form) => {
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        const formData = new FormData(form);
-        const formType = form.querySelector('input[name="tipo"]').value;
-
-        if (formType === 'ropa') {
-            const stockPorTalla = {};
-            form.querySelectorAll('.talla-stock-input input').forEach(input => {
-                const talla = input.id.split('-').pop();
-                if (input.value > 0) {
-                    stockPorTalla[talla] = parseInt(input.value);
+            if (formType === 'ropa') {
+                const stockPorTalla = {};
+                form.querySelectorAll('.talla-stock-input input').forEach(input => {
+                    const talla = input.id.split('-').pop();
+                    if (input.value > 0) {
+                        stockPorTalla[talla] = parseInt(input.value);
+                    }
+                });
+                if (Object.keys(stockPorTalla).length === 0) {
+                    showNotification('Por favor, introduce el stock para al menos una talla.', 'error');
+                    return;
                 }
-            });
-            if (Object.keys(stockPorTalla).length === 0) {
-                showNotification('Por favor, introduce el stock para al menos una talla.', 'error');
-                return;
+                formData.append('stock_por_talla', JSON.stringify(stockPorTalla));
             }
-            formData.append('stock_por_talla', JSON.stringify(stockPorTalla));
-        }
 
-        // --- INICIO DE LA CORRECCIÓN ---
-        // Este bloque de código falta para el tipo 'cine'
-        if (formType === 'cine') {
-            const trailer = form.querySelector('#cine-trailer').value;
-            const clasificacionEdad = form.querySelector('#cine-clasificacion').value;
-            formData.append('trailer', trailer);
-            formData.append('clasificacionEdad', clasificacionEdad);
-        }
-        // --- FIN DE LA CORRECCIÓN ---
+            try {
+                const response = await fetch('http://localhost:3000/api/productos', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
 
-        try {
-            const response = await fetch('https://server-js-ipff.onrender.com/api/productos', {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${token}` },
-                body: formData
-            });
-
-            if (response.ok) {
-                showNotification('Producto agregado exitosamente!');
-                form.reset();
-                fetchProducts();
-            } else {
-                const error = await response.json();
-                showNotification('Error al agregar el producto: ' + error.mensaje, 'error');
+                if (response.ok) {
+                    showNotification('Producto agregado exitosamente!');
+                    form.reset();
+                    fetchProducts();
+                } else {
+                    const error = await response.json();
+                    showNotification('Error al agregar el producto: ' + error.mensaje, 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('Error de conexión. No se pudo agregar el producto.', 'error');
             }
-        } catch (error) {
-            console.error('Error:', error);
-            showNotification('Error de conexión. No se pudo agregar el producto.', 'error');
-        }
-    });
-};
+        });
+    };
 
-    // Función para actualizar el contador de caracteres
     const updateCharCounter = (textarea, counterElement) => {
         const currentLength = textarea.value.length;
         const maxLength = 200;
@@ -632,16 +674,13 @@ const setupFormSubmission = (form) => {
         }
     };
 
-    // Configurar los contadores para los formularios de creación
     const setupFormCounter = (formId, textareaId, counterId) => {
         const form = document.getElementById(formId);
         const textarea = document.getElementById(textareaId);
         const counter = document.getElementById(counterId);
         if (textarea && counter) {
             textarea.addEventListener('input', () => updateCharCounter(textarea, counter));
-            // También inicializar el contador al cargar
             updateCharCounter(textarea, counter);
-            // Asegurarse de que el contador se reinicie al resetear el formulario
             form.addEventListener('reset', () => setTimeout(() => updateCharCounter(textarea, counter), 0));
         }
     };
@@ -651,6 +690,8 @@ const setupFormSubmission = (form) => {
     setupFormCounter('form-electronica', 'electronica-description', 'electronica-description-counter');
     setupFormCounter('form-libros', 'libro-description', 'libro-description-counter');
     setupFormCounter('form-cine', 'cine-description', 'cine-description-counter');
+    setupFormCounter('form-recuerdos', 'recuerdos-description', 'recuerdos-description-counter');
+    setupFormCounter('form-comision', 'comision-biografia', 'comision-biografia-counter');
 
 
     Object.values(forms).forEach(setupFormSubmission);
@@ -660,6 +701,8 @@ const setupFormSubmission = (form) => {
     setupImagePreview(document.getElementById('electronica-images'), document.getElementById('electronica-preview-images-container'), document.getElementById('electronica-file-name-display'));
     setupImagePreview(document.getElementById('libro-images'), document.getElementById('libro-preview-images-container'), document.getElementById('libro-file-name-display'));
     setupImagePreview(document.getElementById('cine-images'), document.getElementById('cine-preview-images-container'), document.getElementById('cine-file-name-display'));
+    setupImagePreview(document.getElementById('recuerdos-images'), document.getElementById('recuerdos-preview-images-container'), document.getElementById('recuerdos-file-name-display'));
+    setupImagePreview(document.getElementById('comision-images'), document.getElementById('comision-preview-images-container'), document.getElementById('comision-file-name-display'));
     setupImagePreview(editImagesInput, editPreviewContainer, editFileNameDisplay);
     
     fetchProducts();
@@ -694,23 +737,17 @@ const setupFormSubmission = (form) => {
 
     editProductForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-    const productId = document.getElementById('edit-product-id').value;
-    const productType = document.getElementById('edit-product-type').value;
-    const formData = new FormData();
+        const productId = document.getElementById('edit-product-id').value;
+        const productType = document.getElementById('edit-product-type').value;
+        const formData = new FormData();
 
-    formData.append('descripcion', document.getElementById('edit-product-description').value);
-    formData.append('precio', document.getElementById('edit-product-price').value);
-    formData.append('tipo', productType);
-
-    const titleOrName = document.getElementById('edit-product-name').value;
-    if (productType === 'libros' || productType === 'cine') {
-        formData.append('titulo', titleOrName);
-    } else {
-        formData.append('nombre', titleOrName);
-    }
+        formData.append('tipo', productType);
 
         switch (productType) {
             case 'ropa':
+                formData.append('nombre', document.getElementById('edit-product-name').value);
+                formData.append('descripcion', document.getElementById('edit-product-description').value);
+                formData.append('precio', document.getElementById('edit-product-price').value);
                 formData.append('color', document.getElementById('edit-ropa-color').value);
                 formData.append('material', document.getElementById('edit-ropa-material').value);
                 
@@ -722,12 +759,18 @@ const setupFormSubmission = (form) => {
                 formData.append('stock_por_talla', JSON.stringify(stockPorTalla));
                 break;
             case 'electronica':
+                formData.append('nombre', document.getElementById('edit-product-name').value);
+                formData.append('descripcion', document.getElementById('edit-product-description').value);
+                formData.append('precio', document.getElementById('edit-product-price').value);
                 formData.append('marca', document.getElementById('edit-electronica-brand').value);
                 formData.append('modelo', document.getElementById('edit-electronica-model').value);
                 formData.append('especificaciones_tecnicas', document.getElementById('edit-electronica-specs').value);
                 formData.append('stock', document.getElementById('edit-electronica-stock').value);
                 break;
             case 'libros':
+                formData.append('titulo', document.getElementById('edit-product-name').value);
+                formData.append('descripcion', document.getElementById('edit-product-description').value);
+                formData.append('precio', document.getElementById('edit-product-price').value);
                 formData.append('stock', document.getElementById('edit-libro-stock').value);
                 formData.append('autor', document.getElementById('edit-libro-author').value);
                 formData.append('editorial', document.getElementById('edit-libro-publisher').value);
@@ -735,14 +778,28 @@ const setupFormSubmission = (form) => {
                 formData.append('genero', document.getElementById('edit-libro-genre').value);
                 break;
             case 'cine':
-                formData.append('stock', document.getElementById('edit-cine-stock').value);
+                formData.append('titulo', document.getElementById('edit-product-name').value);
+                formData.append('descripcion', document.getElementById('edit-product-description').value);
+                formData.append('precio', document.getElementById('edit-product-price').value);
                 formData.append('duracion', document.getElementById('edit-cine-duration').value);
                 formData.append('genero', document.getElementById('edit-cine-genre').value);
                 formData.append('fechaFuncion', document.getElementById('edit-cine-fecha').value); 
                 formData.append('trailer', document.getElementById('edit-cine-trailer').value); 
                 formData.append('clasificacionEdad', document.getElementById('edit-cine-clasificacion').value); 
                 break;
+            case 'recuerdos':
+                formData.append('titulo', document.getElementById('edit-recuerdos-title').value);
+                formData.append('descripcion', document.getElementById('edit-recuerdos-description').value);
+                break;
+            case 'comision':
+                formData.append('nombre', document.getElementById('edit-comision-name').value);
+                formData.append('cargo', document.getElementById('edit-comision-cargo').value);
+                formData.append('biografia', document.getElementById('edit-comision-biografia').value);
+                break;
             case 'general':
+                formData.append('nombre', document.getElementById('edit-product-name').value);
+                formData.append('descripcion', document.getElementById('edit-product-description').value);
+                formData.append('precio', document.getElementById('edit-product-price').value);
                 formData.append('stock', document.getElementById('edit-product-stock').value);
                 formData.append('sku', document.getElementById('edit-product-sku').value);
                 formData.append('categoria', document.getElementById('edit-product-category').value);
@@ -756,26 +813,26 @@ const setupFormSubmission = (form) => {
         });
 
         try {
-            const response = await fetch(`https://server-js-ipff.onrender.com/api/productos/${productId}`, {
+            const response = await fetch(`http://localhost:3000/api/productos/${productId}`, {
                 method: 'PUT',
                 headers: { 'Authorization': `Bearer ${token}` },
                 body: formData
             });
 
             if (response.ok) {
-        showNotification('Producto actualizado exitosamente!');
-        editProductModal.style.display = 'none';
-        fetchProducts();
-        } else {
-        let errorMsg = 'Error desconocido';
-        try {
-        const error = await response.json();
-        errorMsg = error.mensaje || JSON.stringify(error);
-        } catch {
-        errorMsg = await response.text();
-        }
-        showNotification('Error al actualizar el producto: ' + errorMsg, 'error');
-        }
+                showNotification('Producto actualizado exitosamente!');
+                editProductModal.style.display = 'none';
+                fetchProducts();
+            } else {
+                let errorMsg = 'Error desconocido';
+                try {
+                    const error = await response.json();
+                    errorMsg = error.mensaje || JSON.stringify(error);
+                } catch {
+                    errorMsg = await response.text();
+                }
+                showNotification('Error al actualizar el producto: ' + errorMsg, 'error');
+            }
 
         } catch (error) {
             console.error('Error:', error);
