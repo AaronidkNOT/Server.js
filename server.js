@@ -187,7 +187,7 @@ app.get('/api/comision/:id', (req, res) => {
 });
 
 // --- RUTA PÚBLICA PARA OBTENER LA PELÍCULA ACTUAL ---
-// --- RUTA PÚBLICA PARA OBTENER LA PELÍCULA ACTUAL O EL PRÓXIMO ESTRENO ---
+
 app.get('/api/pelicula-actual', (req, res) => {
     const ahora = new Date();
 
