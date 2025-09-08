@@ -44,7 +44,7 @@ const usuarios = [];
 
     usuarios.push({
         _id: 'user1',
-        usuario: 'Sociedad115',
+        usuario: 'cine',
         password: pass1,
         nombre: 'Cine'
     });
@@ -187,7 +187,6 @@ app.get('/api/comision/:id', (req, res) => {
 });
 
 // --- RUTA PÚBLICA PARA OBTENER LA PELÍCULA ACTUAL ---
-
 app.get('/api/pelicula-actual', (req, res) => {
     const ahora = new Date();
 
