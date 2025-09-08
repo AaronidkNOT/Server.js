@@ -103,12 +103,6 @@ const generateObjectId = () => {
     return timestamp + 'xxxxxxxxxxxxxxxx'.replace(/[x]/g, () => (Math.random() * 16 | 0).toString(16)).toLowerCase();
 };
 
-(async () => {
-    usuarios[0].password = await bcrypt.hash('contraseña123', 10);
-    usuarios[1].password = await bcrypt.hash('contraseña456', 10);
-    console.log('Contraseñas encriptadas para el ejemplo.');
-})();
-
 const SECRET_KEY = process.env.SECRET_KEY;
 
 const verificarToken = (req, res, next) => {
