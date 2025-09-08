@@ -46,19 +46,20 @@ const usuarios = [];
         _id: 'user1',
         usuario: 'cine',
         password: pass1,
-        nombre: 'Cinepolis'
+        nombre: 'Cine'
     });
 
     usuarios.push({
         _id: 'user2',
         usuario: 'juegos',
         password: pass2,
-        nombre: 'PlayStore'
+        nombre: 'Juegos'
     });
 
     console.log('Usuarios inicializados con contraseñas encriptadas.');
 })();
 
+    console.log("Usuarios disponibles:", usuarios.map(u => u.usuario));
 
 let productos = [
     { _id: 'prod1', userId: 'user1', tipo: 'cine', titulo: 'Como entrenar a tu dragon', descripcion: 'entrena a un dragon y se vuelve su amigo.', precio: 10500, imagenes: ['https://m.media-amazon.com/images/M/MV5BMzEzMTgwNzktYTk4ZC00ZTQ1LTllZGYtNzY4MTk2ZDM1MzA0XkEyXkFqcGc@._V1_.jpg'], duracion: '120 min', genero: 'Acción', fechaFuncion: "2025-08-14T11:00:00", trailer: 'https://www.youtube.com/embed/liGB1ssYn38?si=vDaH4btyekOwqQUx', rating: { promedio: 0, votos: 0 },
