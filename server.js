@@ -17,7 +17,10 @@ app.listen(port, "0.0.0.0", () => {
 
 // Middleware
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    origin: ["https://cloudi.site", "https://www.cloudi.site"]
+}));
+
 
 // Crear carpeta "uploads" si no existe
 const uploadDir = path.join(__dirname, 'uploads');
