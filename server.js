@@ -44,7 +44,7 @@ const usuarios = [];
 
     usuarios.push({
         _id: 'user1',
-        usuario: 'cine',
+        usuario: 'Sociedad115',
         password: pass1,
         nombre: 'Cine'
     });
