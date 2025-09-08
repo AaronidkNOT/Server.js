@@ -35,20 +35,30 @@ const upload = multer({ storage: storage }).array('imagenes', 5);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // --- Base de datos simulada ---
-const usuarios = [
-    {
+const usuarios = [];
+
+(async () => {
+    // Hasheamos las contraseñas que pusiste en Render
+    const pass1 = await bcrypt.hash(process.env.ADMIN_PASS1, 10);
+    const pass2 = await bcrypt.hash(process.env.ADMIN_PASS2, 10);
+
+    usuarios.push({
         _id: 'user1',
         usuario: 'cine',
-        password: 'contraseña_segura_encriptada_con_bcrypt',
+        password: pass1,
         nombre: 'Cinepolis'
-    },
-    {
+    });
+
+    usuarios.push({
         _id: 'user2',
         usuario: 'juegos',
-        password: 'contraseña_segura_encriptada_con_bcrypt_2',
+        password: pass2,
         nombre: 'PlayStore'
-    }
-];
+    });
+
+    console.log('Usuarios inicializados con contraseñas encriptadas.');
+})();
+
 
 let productos = [
     { _id: 'prod1', userId: 'user1', tipo: 'cine', titulo: 'Como entrenar a tu dragon', descripcion: 'entrena a un dragon y se vuelve su amigo.', precio: 10500, imagenes: ['https://m.media-amazon.com/images/M/MV5BMzEzMTgwNzktYTk4ZC00ZTQ1LTllZGYtNzY4MTk2ZDM1MzA0XkEyXkFqcGc@._V1_.jpg'], duracion: '120 min', genero: 'Acción', fechaFuncion: "2025-08-14T11:00:00", trailer: 'https://www.youtube.com/embed/liGB1ssYn38?si=vDaH4btyekOwqQUx', rating: { promedio: 0, votos: 0 },
@@ -98,7 +108,7 @@ const generateObjectId = () => {
     console.log('Contraseñas encriptadas para el ejemplo.');
 })();
 
-const SECRET_KEY = 'tu-clave-secreta-muy-larga-y-segura';
+const SECRET_KEY = process.env.SECRET_KEY;
 
 const verificarToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
