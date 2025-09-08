@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         userNameSpan.textContent = `Bienvenido, ${payload.username}`;
 
         // Lógica específica para el usuario 'cine'
-        if (payload.username === 'cine') {
+    if (payload.username === 'cine') {
     const unwantedOptions = ['general', 'ropa', 'electronica', 'libros', 'juegos'];
     Array.from(formSelector.options).forEach(option => {
         if (unwantedOptions.includes(option.value)) {
@@ -65,36 +65,35 @@ document.addEventListener('DOMContentLoaded', async () => {
         const formToShow = forms[selectedForm];
         formToShow.style.display = 'flex';
         setTimeout(() => formToShow.classList.add('show'), 20);
-                });
+    });
 
-                // Formulario por defecto: cine
-                const defaultForm = document.querySelector('#form-cine');
-                defaultForm.style.display = 'flex';
-                defaultForm.classList.add('show');
-            } else if (payload.username === 'juegos') {
-                Array.from(formSelector.options).forEach(option => {
-                    if (unwantedOptions.includes(option.value)) {
+    // Formulario por defecto: cine
+    const defaultForm = document.querySelector('#form-cine');
+    defaultForm.style.display = 'flex';
+    defaultForm.classList.add('show');
+} else if (payload.username === 'juegos') {
+    Array.from(formSelector.options).forEach(option => {
+        if (unwantedOptions.includes(option.value)) {
             option.remove();
-                    }
-            });
+        }
+    });
 
+    formSelector.addEventListener('change', (e) => {
+        const selectedForm = e.target.value;
+        Object.values(forms).forEach(form => {
+            if (form.classList.contains('show')) {
+                form.classList.remove('show');
+                setTimeout(() => form.style.display = 'none', 250);
+            }
+        });
+        const formToShow = forms[selectedForm];
+        formToShow.style.display = 'flex';
+        setTimeout(() => formToShow.classList.add('show'), 20);
+    });
 
-            formSelector.addEventListener('change', (e) => {
-                const selectedForm = e.target.value;
-                Object.values(forms).forEach(form => {
-                    if (form.classList.contains('show')) {
-                        form.classList.remove('show');
-                        setTimeout(() => form.style.display = 'none', 250);
-                    }
-                });
-                const formToShow = forms[selectedForm];
-                formToShow.style.display = 'flex';
-                setTimeout(() => formToShow.classList.add('show'), 20);
-            });
-
-            const defaultForm = document.querySelector('#form-general');
-            defaultForm.style.display = 'flex';
-            defaultForm.classList.add('show');
+    const defaultForm = document.querySelector('#form-general');
+    defaultForm.style.display = 'flex';
+    defaultForm.classList.add('show');
         } else {
             formSelector.addEventListener('change', (e) => {
                 const selectedForm = e.target.value;
