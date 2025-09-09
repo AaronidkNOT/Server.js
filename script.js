@@ -14,9 +14,19 @@ document.addEventListener('DOMContentLoaded', () => {
             usuario,
             password
         };
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+        const eyeOpen = document.getElementById('eyeOpen');
+        const eyeClosed = document.getElementById('eyeClosed');
 
+        togglePassword.addEventListener('click', () => {
+            const isPassword = passwordInput.type === 'password';
+            passwordInput.type = isPassword ? 'text' : 'password';
+            eyeOpen.style.display = isPassword ? 'none' : 'inline';
+            eyeClosed.style.display = isPassword ? 'inline' : 'none';
+        });
         try {
-            const response = await fetch('https://cloudi.site/api/login', {
+            const response = await fetch('https://cloudiarg.com/api/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -45,14 +55,4 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-    const togglePassword = document.getElementById('togglePassword');
-    const passwordInput = document.getElementById('password');
-    const eyeOpen = document.getElementById('eyeOpen');
-    const eyeClosed = document.getElementById('eyeClosed');
 
-    togglePassword.addEventListener('click', () => {
-        const isPassword = passwordInput.type === 'password';
-        passwordInput.type = isPassword ? 'text' : 'password';
-        eyeOpen.style.display = isPassword ? 'none' : 'inline';
-        eyeClosed.style.display = isPassword ? 'inline' : 'none';
-    });
