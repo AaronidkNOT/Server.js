@@ -11,9 +11,7 @@ require('dotenv').config();
 // Inicializamos la aplicación de Express
 const app = express();
 const port = process.env.PORT || 3000;
-app.listen(port, () => {
-    console.log(`Servidor escuchando en el puerto ${port}`);
-});
+
 const productosFilePath = path.join(__dirname, 'productos.json');
 // Middleware
 app.use(express.json());
@@ -235,7 +233,7 @@ app.get('/api/proximos-estrenos', (req, res) => {
 
 
 // --- Rutas de la API ---
-app.post('/login', async (req, res) => {
+app.post('/api/login', async (req, res) => {
     const { usuario, password } = req.body;
     const user = usuarios.find(u => u.usuario === usuario);
     if (!user) return res.status(401).json({ mensaje: 'Credenciales inválidas' });
@@ -497,9 +495,8 @@ app.delete('/api/productos/:id', verificarToken, (req, res) => {
     saveData();
     res.json({ mensaje: 'Producto eliminado exitosamente' });
 });
-
-app.listen(port, () => {
-    console.log(`Servidor escuchando en http://localhost:${port}`);
+app.listen(port, '0.0.0.0', () => {
+    console.log(`Servidor escuchando en http://0.0.0.0:${port}`);
 });
 
 app.get("/healthz", (req, res) => res.sendStatus(200));

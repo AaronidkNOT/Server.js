@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         try {
-            const response = await fetch('https://cloudi.site/login', {
+            const response = await fetch('https://cloudi.site/api/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
