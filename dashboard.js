@@ -266,7 +266,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <div class="product-image-container">
                     ${producto.imagenes.map((img, index) => `
                         <img
-                            ${index === 0 ? `src="https://server-js-1-o703.onrender.com/uploads/${img}"` : `data-src="https://server-js-1-o703.onrender.com/uploads/${img}"`}
+                            ${index === 0 ? `src="https://cloudi.site/uploads/${img}"` : `data-src="https://cloudi.site/uploads/${img}"`}
                             alt="${producto.nombre || producto.titulo || producto.nombre}"
                             class="${index === 0 ? 'active' : ''}"
                             loading="lazy"
@@ -358,7 +358,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const productId = btn.getAttribute('data-id');
                 if (confirm('¿Estás seguro de que quieres eliminar este producto?')) {
                     try {
-                        const response = await fetch(`https://server-js-1-o703.onrender.com/api/productos/${productId}`, {
+                        const response = await fetch(`https://cloudi.site/api/productos/${productId}`, {
                             method: 'DELETE',
                             headers: {
                                 'Authorization': `Bearer ${token}`
@@ -420,7 +420,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     if (producto.imagenes && producto.imagenes.length > 0) {
                         producto.imagenes.forEach(imgName => {
                             const img = document.createElement('img');
-                            img.src = `https://server-js-1-o703.onrender.com/uploads/${imgName}`;
+                            img.src = `https://cloudi.site/uploads/${imgName}`;
                             currentImagesContainer.appendChild(img);
                         });
                     } else {
@@ -510,7 +510,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const fetchProducts = async () => {
         productsContainer.innerHTML = '<p id="loading-message">Cargando productos...</p>';
         try {
-            const response = await fetch('https://server-js-1-o703.onrender.com/api/productos', {
+            const response = await fetch('https://cloudi.site/api/productos', {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -642,7 +642,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
 
             try {
-                const response = await fetch('https://server-js-1-o703.onrender.com/api/productos', {
+                const response = await fetch('https://cloudi.site/api/productos', {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${token}` },
                     body: formData
@@ -813,7 +813,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
 
         try {
-            const response = await fetch(`https://server-js-1-o703.onrender.com/api/productos/${productId}`, {
+            const response = await fetch(`https://cloudi.site/api/productos/${productId}`, {
                 method: 'PUT',
                 headers: { 'Authorization': `Bearer ${token}` },
                 body: formData

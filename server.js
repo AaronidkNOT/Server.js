@@ -7,14 +7,14 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const sharp = require('sharp');
-
+require('dotenv').config();
 // Inicializamos la aplicación de Express
 const app = express();
 const port = process.env.PORT || 3000;
-app.listen(port, "0.0.0.0", () => {
-    console.log(`Servidor corriendo en http://0.0.0.0:${port}`);
+app.listen(port, () => {
+    console.log(`Servidor escuchando en el puerto ${port}`);
 });
-
+const productosFilePath = path.join(__dirname, 'productos.json');
 // Middleware
 app.use(express.json());
 app.use(cors({
@@ -61,42 +61,35 @@ const usuarios = [];
 
     console.log("Usuarios disponibles:", usuarios.map(u => u.usuario));
 
-let productos = [
-    { _id: 'prod1', userId: 'user1', tipo: 'cine', titulo: 'Como entrenar a tu dragon', descripcion: 'entrena a un dragon y se vuelve su amigo.', precio: 10500, imagenes: ['https://m.media-amazon.com/images/M/MV5BMzEzMTgwNzktYTk4ZC00ZTQ1LTllZGYtNzY4MTk2ZDM1MzA0XkEyXkFqcGc@._V1_.jpg'], duracion: '120 min', genero: 'Acción', fechaFuncion: "2025-08-14T11:00:00", trailer: 'https://www.youtube.com/embed/liGB1ssYn38?si=vDaH4btyekOwqQUx', rating: { promedio: 0, votos: 0 },
-        clasificacionEdad: 'ATP' },
-    { _id: 'prod2', userId: 'user2', tipo: 'electronica', nombre: 'Videojuego nuevo', descripcion: 'Último lanzamiento para PS5.', precio: 69.99, stock: 50, imagenes: ['videojuego.jpg'], marca: 'Sony', modelo: 'PS5' },
-    {
-        _id: 'prod3',
-        userId: 'user1',
-        tipo: 'cine',
-        titulo: 'El Origen del Tiempo',
-        descripcion: 'Un científico viaja a través de diferentes épocas para salvar a la humanidad.',
-        precio: 1200,
-        imagenes: ['https://m.media-amazon.com/images/M/MV5BZDYwMDU0NTktMjg1MC00ZWNiLWE2ZTQtYzczZWMxZGM3OTJmXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg'],
-        duracion: '135 min',
-        genero: 'Ciencia Ficción',
-        fechaFuncion: "2025-12-01T20:00:00",
-        trailer: 'https://www.youtube.com/embed/RV9L7ui9Cn8?si=Yk79TUEAWtYqhjKv',
-        clasificacionEdad: 'ATP'
-    },
-    {
-        _id: 'prod4',
-        userId: 'user1',
-        tipo: 'cine',
-        titulo: 'Dracula 4',
-        descripcion: 'Una aventura épica en un mundo de fantasía y magia.',
-        precio: 1150,
-        imagenes: ['https://pics.filmaffinity.com/Draacula_4_La_sombra_del_dragaon-113373549-large.jpg'],
-        duracion: '140 min',
-        genero: 'Fantasía',
-        fechaFuncion: "2025-10-15T19:30:00",
-        trailer: 'https://www.youtube.com/embed/mDfdNTf4FA0?si=0421HALUiy7KBIwT',
-        clasificacionEdad: '+13'
-    },
-    { _id: 'prod5', userId: 'user1', tipo: 'recuerdos', titulo: 'Día del Cine Nacional', descripcion: 'Fotos de la celebración anual del Día del Cine Nacional con la comunidad.', imagenes: ['recuerdos1.jpg', 'recuerdos2.jpg'] },
-    { _id: 'prod6', userId: 'user1', tipo: 'comision', nombre: 'Ana Gómez', cargo: 'Presidenta', biografia: 'Ana tiene más de 20 años de experiencia en la industria cinematográfica.' }
-];
+function loadData() {
+    if (fs.existsSync(productosFilePath)) {
+        try {
+            const data = fs.readFileSync(productosFilePath, 'utf8');
+            return JSON.parse(data);
+        } catch (error) {
+            console.error('Error al leer o parsear el archivo de datos:', error);
+            return []; // Retorna un array vacío para no detener el servidor en caso de error
+        }
+    } else {
+        const initialData = [
+            { _id: 'prod1', userId: 'user1', tipo: 'cine', titulo: 'Como entrenar a tu dragon', descripcion: 'entrena a un dragon y se vuelve su amigo.', precio: 10500, imagenes: ['https://m.media-amazon.com/images/M/MV5BMzEzMTgwNzktYTk4ZC00ZTQ1LTllZGYtNzY4MTk2ZDM1MzA0XkEyXkFqcGc@._V1_.jpg'], duracion: '120 min', genero: 'Acción', fechaFuncion: "2025-08-14T11:00:00", trailer: 'https://www.youtube.com/embed/liGB1ssYn38?si=vDaH4btyekOwqQUx', rating: { promedio: 0, votos: 0 }, clasificacionEdad: 'ATP' },
+            { _id: 'prod2', userId: 'user2', tipo: 'electronica', nombre: 'Videojuego nuevo', descripcion: 'Último lanzamiento para PS5.', precio: 69.99, stock: 50, imagenes: ['videojuego.jpg'], marca: 'Sony', modelo: 'PS5' },
+            { _id: 'prod3', userId: 'user1', tipo: 'cine', titulo: 'El Origen del Tiempo', descripcion: 'Un científico viaja a través de diferentes épocas para salvar a la humanidad.', precio: 1200, imagenes: ['https://m.media-amazon.com/images/M/MV5BZDYwMDU0NTktMjg1MC00ZWNiLWE2ZTQtYzczZWMxZGM3OTJmXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg'], duracion: '135 min', genero: 'Ciencia Ficción', fechaFuncion: "2025-12-01T20:00:00", trailer: 'https://www.youtube.com/embed/RV9L7ui9Cn8?si=Yk79TUEAWtYqhjKv', clasificacionEdad: 'ATP' },
+            { _id: 'prod4', userId: 'user1', tipo: 'cine', titulo: 'Dracula 4', descripcion: 'Una aventura épica en un mundo de fantasía y magia.', precio: 1150, imagenes: ['https://pics.filmaffinity.com/Draacula_4_La_sombra_del_dragaon-113373549-large.jpg'], duracion: '140 min', genero: 'Fantasía', fechaFuncion: "2025-10-15T19:30:00", trailer: 'https://www.youtube.com/embed/mDfdNTf4FA0?si=0421HALUiy7KBIwT', clasificacionEdad: '+13' },
+            { _id: 'prod5', userId: 'user1', tipo: 'recuerdos', titulo: 'Día del Cine Nacional', descripcion: 'Fotos de la celebración anual del Día del Cine Nacional con la comunidad.', imagenes: ['recuerdos1.jpg', 'recuerdos2.jpg'] },
+            { _id: 'prod6', userId: 'user1', tipo: 'comision', nombre: 'Ana Gómez', cargo: 'Presidenta', biografia: 'Ana tiene más de 20 años de experiencia en la industria cinematográfica.' }
+        ];
+        fs.writeFileSync(productosFilePath, JSON.stringify(initialData, null, 2), 'utf8');
+        return initialData;
+    }
+}
 
+let productos = loadData();
+
+// Coloca esta función en alguna parte de tu archivo para poder llamarla
+function saveData() {
+    fs.writeFileSync(productosFilePath, JSON.stringify(productos, null, 2), 'utf8');
+}
 
 const generateObjectId = () => {
     const timestamp = (new Date().getTime() / 1000 | 0).toString(16);
@@ -396,6 +389,7 @@ app.post('/api/productos', verificarToken, upload, async (req, res) => {
         }
 
         productos.push(nuevoProducto);
+        saveData();
         res.status(201).json(nuevoProducto);
     } catch (error) {
         console.error('Error al procesar el producto:', error);
@@ -443,7 +437,7 @@ app.put('/api/productos/:id', verificarToken, upload, async (req, res) => {
             ...updatedData,
             tipo: productoExistente.tipo // Mantener el tipo original
         };
-
+        saveData();
         res.json({ mensaje: 'Producto actualizado exitosamente', producto: productos[productIndex] });
     } catch (error) {
         console.error('Error al actualizar el producto:', error);
@@ -500,7 +494,7 @@ app.delete('/api/productos/:id', verificarToken, (req, res) => {
     eliminarImagenes(productoAEliminar.imagenes);
 
     productos.splice(productIndex, 1);
-
+    saveData();
     res.json({ mensaje: 'Producto eliminado exitosamente' });
 });
 
