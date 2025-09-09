@@ -16,7 +16,7 @@ const productosFilePath = path.join(__dirname, 'productos.json');
 // Middleware
 app.use(express.json());
 app.use(cors({
-    origin: ["https://cloudi.site", "https://www.cloudi.site", "https://cloudi.com.ar", "https://xn--sociedadespaolacarhue-nbc.cloudi.com.ar"]
+    origin: ["https://cloudi.site", "https://www.cloudi.site", "https://cloudi.com.ar", "https://xn--sociedadespaolacarhue-nbc.cloudi.com.ar", "https://cloudiarg.com"]
 }));
 
 

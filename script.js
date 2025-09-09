@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         mensajeDiv.textContent = '';
         mensajeDiv.style.color = '';
-
+        console.log('submit detectado');
         const usuario = document.getElementById('usuario').value;
         const password = document.getElementById('password').value;
         const data = {
@@ -54,5 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+const loginForm = document.querySelector('form');
+console.log(loginForm);
 
 
