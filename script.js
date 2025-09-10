@@ -34,7 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify(data)
             });
             const result = await response.json();
-            console.error('Error de red o JSON inválido:', error);
 
             if (response.ok) {
                 console.log('Inicio de sesión exitoso:', result.mensaje);
