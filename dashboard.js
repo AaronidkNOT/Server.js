@@ -665,7 +665,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const updateCharCounter = (textarea, counterElement) => {
         const currentLength = textarea.value.length;
-        const maxLength = 200;
+        const maxLength = 400;
         counterElement.textContent = `${currentLength}/${maxLength}`;
         if (currentLength > maxLength) {
             counterElement.style.color = 'red';
